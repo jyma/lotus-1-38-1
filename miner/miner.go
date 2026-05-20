@@ -147,7 +147,12 @@ func (m *Miner) Start(_ context.Context) error {
 		return fmt.Errorf("miner already started")
 	}
 	m.stop = make(chan struct{})
-	go m.mine(context.TODO())
+	if os.Getenv("LOTUS_WINNING_POST") == "true" || os.Getenv("LOTUS_WNPOST") == "true" {
+		log.Warnf("This miner will mine blocks")
+		go m.mine(context.TODO())
+	} else {
+		log.Warnf("This miner will not mine blocks (winningPoSt disabled).")
+	}
 	return nil
 }
 

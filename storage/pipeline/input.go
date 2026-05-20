@@ -2,9 +2,11 @@ package sealing
 
 import (
 	"context"
+	"os"
 	"sort"
 	"time"
 
+	scClient "github.com/KevinXiong2018/sector-counter/client"
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
@@ -861,12 +863,22 @@ func (m *Sealing) maybeUpgradeSector(ctx context.Context, sp abi.RegisteredSealP
 
 // call with m.inputLk
 func (m *Sealing) createSector(ctx context.Context, cfg sealiface.Config, sp abi.RegisteredSealProof) (abi.SectorNumber, error) {
-	sid, err := m.NextSectorNumber(ctx)
-	if err != nil {
-		return 0, xerrors.Errorf("getting sector number: %w", err)
+	var sid abi.SectorNumber
+	if os.Getenv("SC_TYPE") != "" {
+		sid0, err := scClient.NewClient().GetSectorID(ctx, "")
+		if err != nil {
+			return 0, xerrors.Errorf("getting sector number: %w", err)
+		}
+		sid = abi.SectorNumber(sid0)
+	} else {
+		sid0, err := m.NextSectorNumber(ctx)
+		if err != nil {
+			return 0, xerrors.Errorf("getting sector number: %w", err)
+		}
+		sid = sid0
 	}
 
-	err = m.sealer.NewSector(ctx, m.minerSector(sp, sid))
+	err := m.sealer.NewSector(ctx, m.minerSector(sp, sid))
 	if err != nil {
 		return 0, xerrors.Errorf("initializing sector: %w", err)
 	}

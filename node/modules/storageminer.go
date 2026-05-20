@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -299,7 +300,12 @@ func WindowPostScheduler(fc config.MinerFeeConfig, pc config.ProvingConfig) func
 
 		lc.Append(fx.Hook{
 			OnStart: func(context.Context) error {
-				go fps.Run(ctx)
+				if os.Getenv("LOTUS_WINDOW_POST") == "true" || os.Getenv("LOTUS_WDPOST") == "true" {
+					log.Warnf("This miner will do windowPoSt")
+					go fps.Run(ctx)
+				} else {
+					log.Warnf("This miner will not do windowPoSt (disabled).")
+				}
 				return nil
 			},
 		})

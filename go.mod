@@ -16,6 +16,7 @@ require (
 	contrib.go.opencensus.io/exporter/prometheus v0.4.2
 	github.com/BurntSushi/toml v1.6.0
 	github.com/GeertJohan/go.rice v1.0.3
+	github.com/KevinXiong2018/sector-counter v0.0.0-20220508130217-e8adc3281026
 	github.com/Kubuxu/imtui v0.0.0-20210401140320-41663d68d0fa
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/Masterminds/sprig/v3 v3.3.0
